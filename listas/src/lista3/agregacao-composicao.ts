@@ -37,15 +37,42 @@ class CarItem {
     }
     // método que converte objeto em string
     toString(): string {
-        return `Car Item: {Product: ${this.product.toString()} Quantity: ${this.quantity} Total Price: ${this.calculateTotalPrice()}}`
+        return `\n Car Item: {Product: ${this.product.toString()} Quantity: ${this.quantity} Total Price: ${this.calculateTotalPrice()}}`
     }
 }
 const obj1CarItem = new CarItem(obj1Product, 2)
-console.log(obj1CarItem.toString())
+//console.log(obj1CarItem.toString())
 const obj2CarItem = new CarItem(obj2Product, 5)
-console.log(obj2CarItem.toString())
+//console.log(obj2CarItem.toString())
 
 class ShoppingCart {
     private id: number
-    private carItens: CarItem[]
+    private carItens: CarItem[] // representação de um vetor de CarItem
+
+    constructor(id: number){ // o construtor vai receber apenas 1 parâmetro
+        this.id = id
+        this.carItens = [] // apenas aloca espaço na memória
+    }
+    addCarItem(carItem: CarItem): void {
+        // insere um item de carrinho no carrinho de compras
+        this.carItens.push(carItem)
+    }
+    // método que converte objeto em string
+    toString(): string{
+        return `{Id: ${this.id} Itens do carrinho: ${this.carItens}}`
+    }
+    calcuteTotalShoppingCart(){
+        /* percorre o vetor
+         ES 5 e 6 */
+        let soma: number = 0
+        this.carItens.forEach(carItem => {
+            soma = soma + carItem.calculateTotalPrice()
+        })
+        return soma
+    }
 }
+let obj1ShoppingCart = new ShoppingCart(1)
+obj1ShoppingCart.addCarItem(obj1CarItem)
+obj1ShoppingCart.addCarItem(obj2CarItem)
+console.log(obj1ShoppingCart.toString())
+console.log(obj1ShoppingCart.calcuteTotalShoppingCart())
