@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^4.13.0",
+    "fastify": "^4.16.3"
+  },
+  "devDependencies": {
+    "prisma": "^4.13.0",
+    "tsx": "^3.12.6",
+    "typescript": "^5.0.4"
+  }
+}
