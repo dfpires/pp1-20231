@@ -2,9 +2,13 @@
 import Fastify from 'fastify'
 // importa as rotas
 import {AppRoutes} from './routes'
+// importa a dependência cors
+import cors from '@fastify/cors'
 
 // cria um objeto da classe Fastify
 const server = Fastify()
+// registra cors no server
+server.register(cors)
 // registra as rotas
 server.register(AppRoutes)
 
