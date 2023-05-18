@@ -9,13 +9,30 @@ async function consultaPosts(){
     // percorre cada post presente em posts e montar o conteúdo da tabela
     posts.forEach( post => {
         // acumula na variável conteudoTabela os dados de cada post
-        conteudoTabela += `<tr> <td> ${post.id} </td> <td> ${post.title} </td> <td> ${post.content} </td> <td> ${post.published} </td> </tr>`
+        conteudoTabela += `<tr> <td> ${post.id} </td> <td> ${post.title} </td> <td> ${post.content} </td> <td> ${post.published} </td> <td> <button onclick="remover(${post.id})"> <i class="bi bi-trash"></i> </button> </td> <td> <i class="bi bi-pencil"></i> </td> </tr>`
     })
     // vamos jogar os dados no HTML
     document.getElementById("corpoTabela").innerHTML = conteudoTabela
 
 }
 
+async function remover(id){
+    const confirmacao = confirm('Confirma a exclusão do Post? ')
+    if (!confirmacao){ // clicou em não
+        return 
+    }
+    // clicou em sim
+    await fetch(`http://localhost:3333/post/${id}`, {
+        method: 'DELETE'
+    })
+    .then(resposta => {
+        alert('Remoção realizada')
+    })
+    .catch(error => {
+        alert('Problema na remoção')
+    })
+    consultaPosts() // atualiza a tabela
+}
 // consome que api que cadastra um post no banco de dados
 async function confirmar(){
     // recupera os dados do formulário
