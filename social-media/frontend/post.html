@@ -32,7 +32,28 @@
         </div>
     </nav>
     <div class="container">
-        <table class="table">
+        <form class="border p-4">
+            <div class="mb-3 mt-4">
+                <label for="title" class="form-label"> Título </label>
+                <input id="title" class="form-control w-50" type="text"/>
+            </div>
+            <div class="mb-3">
+                <label for="content" class="form-label"> Conteúdo </label>
+                <input id="content" class="form-control w-50" type="text"/>
+            </div>
+            <div class="mb-3">
+              <input class="form-check-input" id="sim" name="publicado" type="radio"/> 
+              <label for="sim"> Publicado </label>
+            </div>
+            <div class="mb-3">
+                <input class="form-check-input" id="nao" name="publicado" type="radio"/> 
+                <label for="nao"> Não Publicado </label>
+            </div>
+            <button type="button" class="btn btn-primary" onClick="confirmar()"> 
+                Confirmar 
+            </button>
+        </form>
+        <table class="table mt-5">
             <thead>
                 <tr>
                     <th scope="col"> Id </th>
