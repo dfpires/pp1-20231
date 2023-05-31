@@ -18,6 +18,7 @@ async function consultaPosts(){
 
 function editar(id, title, content, published){
     // alimenta o formulário
+    document.getElementById("id").value = id
     document.getElementById("title").value = title;
     document.getElementById("content").value = content;
     (published) ? document.getElementById("sim").checked = true : 
@@ -48,16 +49,29 @@ async function confirmar(){
     const title = document.getElementById("title").value
     const content = document.getElementById("content").value
     const published = document.getElementById("sim").checked
-    const corpo = {title, content, published}
+    const id = document.getElementById("id").value
+    let corpo
+    let verbo
+    if (id) { // atualizar
+        corpo = {id, title, content, published}
+        verbo = 'PUT'
+    }
+    else { // cadastrar
+        corpo = {title, content, published}
+        verbo = 'POST'
+    }
+     
     // chama a api
     const post = await fetch('http://localhost:3333/post', {
-        method: 'POST',
+        method: verbo,
         body: JSON.stringify(corpo), // JSON transformado em string
         headers: {
             "Content-Type": "application/json;charset=UTF-8"
         }
     })
     .then( resposta => {
+        alert(verbo)
+        alert(`${corpo.id} - ${corpo.title} - ${corpo.content} - ${corpo.published}`)
         alert('Operação realizada com sucesso')
     })
     .catch(error => {
@@ -66,6 +80,7 @@ async function confirmar(){
     // atualiza a tabela
     consultaPosts()
     // limpa os campos
+    document.getElementById("id").value = ''
     document.getElementById("title").value = ''
     document.getElementById("content").value = ''
     document.getElementById("sim").checked = false
