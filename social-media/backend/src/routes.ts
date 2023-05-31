@@ -99,29 +99,26 @@ export async function AppRoutes(server:FastifyInstance){
         })
 
         // rota para atualizar N campos de um post
-        server.put('/post/:id', async (request) => {
-            // objeto zod para o parâmetro :id
-            const idParam = z.object({
-                id: z.string()
-            })
+        server.put('/post', async (request) => {
             // objeto zod para o corpo da requsição
             const putBody = z.object({
+                "id": z.number(),
                 "title": z.string(),
-                "content": z.string()
+                "content": z.string(),
+                "published": z.string()
             })
             // recupera os dados do frontend
-            const {id} = idParam.parse(request.params)
-            const {title, content} = putBody.parse(request.body)
+            const {id, title, content, published} = putBody.parse(request.body)
 
             // atualiza no banco de dados
             const resposta = await prisma.post.updateMany({
                 where: {
-                    id: Number(id),
-                    published: true
+                    id: id
                 },
                 data: {
-                    title: title,
-                    content: content
+                    title,
+                    content,
+                    published: Boolean(published)
                 }
             })
             return (resposta.count >= 1) ?  'atualização com sucesso' :  'nada foi atualizado'
