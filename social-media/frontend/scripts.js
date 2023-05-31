@@ -9,12 +9,21 @@ async function consultaPosts(){
     // percorre cada post presente em posts e montar o conteúdo da tabela
     posts.forEach( post => {
         // acumula na variável conteudoTabela os dados de cada post
-        conteudoTabela += `<tr> <td> ${post.id} </td> <td> ${post.title} </td> <td> ${post.content} </td> <td> ${post.published} </td> <td> <button onclick="remover(${post.id})"> <i class="bi bi-trash"></i> </button> </td> <td> <i class="bi bi-pencil"></i> </td> </tr>`
+        conteudoTabela += `<tr> <td> ${post.id} </td> <td> ${post.title} </td> <td> ${post.content} </td> <td> ${post.published} </td> <td> <button onclick="remover(${post.id})"> <i class="bi bi-trash"></i> </button> </td> <td> <button onclick="editar(${post.id}, '${post.title}', '${post.content}', ${post.published})">  <i class="bi bi-pencil"></i> </button> </td> </tr>`
     })
     // vamos jogar os dados no HTML
     document.getElementById("corpoTabela").innerHTML = conteudoTabela
 
 }
+
+function editar(id, title, content, published){
+    // alimenta o formulário
+    document.getElementById("title").value = title;
+    document.getElementById("content").value = content;
+    (published) ? document.getElementById("sim").checked = true : 
+                  document.getElementById("nao").checked = true
+}
+
 
 async function remover(id){
     const confirmacao = confirm('Confirma a exclusão do Post? ')
@@ -39,7 +48,6 @@ async function confirmar(){
     const title = document.getElementById("title").value
     const content = document.getElementById("content").value
     const published = document.getElementById("sim").checked
-    alert(published)
     const corpo = {title, content, published}
     // chama a api
     const post = await fetch('http://localhost:3333/post', {
@@ -57,4 +65,9 @@ async function confirmar(){
     })
     // atualiza a tabela
     consultaPosts()
+    // limpa os campos
+    document.getElementById("title").value = ''
+    document.getElementById("content").value = ''
+    document.getElementById("sim").checked = false
+    document.getElementById("nao").checked = false
 }
