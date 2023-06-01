@@ -3,18 +3,14 @@ import {z} from 'zod'
 import {prisma} from './lib/prisma'
 
 export async function AppRoutes(server:FastifyInstance){
-        // cria a rota /hello com o verbo get (consulta)
-        server.get('/hello', () => {
-            return 'Hello, good night'
-        })
-
-        // rota para listar (consultar) os posts cadastrados no banco de dados
+                // rota para listar (consultar) os posts cadastrados no banco de dados
         // a função é assíncrona, isto é, quem a chamar, pode continuar sem que tenha resposta
         server.get('/posts', async () => {
             // await (aguarde) indica que a função somente continua depois que os dados vieram do BD
             const posts = await prisma.post.findMany()
             return posts
         })
+
 
         server.get('/posts/title/:title', async (request) => {
             // define um objeto zod contendo o esquema de dados
@@ -35,23 +31,44 @@ export async function AppRoutes(server:FastifyInstance){
             return posts
         })
 
+        server.get('/posts/user/:userId', async (request) => {
+            // define um objeto zod contendo o esquema de dados
+            const userIdParam = z.object({
+                userId: z.string()
+            })
+            // recupera o dado do frontend a partir do zod titleParam
+            // converte o texto enviado pelo frontend para a variável title
+            const {userId} = userIdParam.parse(request.params)
+
+            const posts = await prisma.post.findMany({
+                where: {
+                    userId: Number(userId)     
+                }          
+                })
+            return posts
+        })
+
+
+
         // rota para criação de um post, adição de um post no banco - verbo post
         server.post('/post', async (request) => {
             // define um objeto zod contendo o esquema de dados
             const postBody = z.object({
                 title: z.string(),
                 content: z.string(),
-                published: z.boolean()
+                published: z.boolean(),
+                userId: z.number()
             })
             // recupera o dado do frontend a partir do zod postBody
             // converte o texto enviado pelo frontend para as variáveis title, content e published
-            const {title, content, published} = postBody.parse(request.body)
+            const {title, content, published, userId} = postBody.parse(request.body)
             // cria um novo post no banco de dados
             const newPost = await prisma.post.create({
                 data: {
-                    title: title,
-                    content: content,
-                    published: published
+                    title,
+                    content,
+                    published,
+                    userId
                 }
             })
 
@@ -105,7 +122,7 @@ export async function AppRoutes(server:FastifyInstance){
                 "id": z.number(),
                 "title": z.string(),
                 "content": z.string(),
-                "published": z.string()
+                "published": z.boolean()
             })
             // recupera os dados do frontend
             const {id, title, content, published} = putBody.parse(request.body)
@@ -113,7 +130,7 @@ export async function AppRoutes(server:FastifyInstance){
             // atualiza no banco de dados
             const resposta = await prisma.post.updateMany({
                 where: {
-                    id: id
+                    id: Number(id)
                 },
                 data: {
                     title,
@@ -122,5 +139,31 @@ export async function AppRoutes(server:FastifyInstance){
                 }
             })
             return (resposta.count >= 1) ?  'atualização com sucesso' :  'nada foi atualizado'
+        })
+
+        // rota para criar user
+        server.post('/user', async (request) => {
+            const userBody = z.object({
+                username: z.string(),
+                password: z.string(),
+                email: z.string()
+            })
+
+            let {username, password, email} = userBody.parse(request.body)
+
+            const newUser = await prisma.user.create({
+                data: {
+                    username,
+                    password,
+                    email
+                }
+            })
+            return newUser
+        })
+
+        // rota que consulta os usuários
+        server.get('/users', async () => {
+            const users = await prisma.user.findMany()
+            return users
         })
 }
