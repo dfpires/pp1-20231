@@ -49,7 +49,8 @@ async function confirmar(){
     const title = document.getElementById("title").value
     const content = document.getElementById("content").value
     const published = document.getElementById("sim").checked
-    const id = document.getElementById("id").value
+    const id = Number(document.getElementById("id").value)
+   
     let corpo
     let verbo
     if (id) { // atualizar
@@ -61,6 +62,8 @@ async function confirmar(){
         verbo = 'POST'
     }
      
+    console.log(corpo)
+    console.log(JSON.stringify(corpo))
     // chama a api
     const post = await fetch('http://localhost:3333/post', {
         method: verbo,
