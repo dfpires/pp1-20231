@@ -15,4 +15,14 @@ model Post {
   title     String
   content   String
   published Boolean @default(false)
+  userId    Int
+  user      User  @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id        Int @id @default(autoincrement())
+  username  String @unique
+  password  String
+  email     String
+  posts     Post[]
 }
