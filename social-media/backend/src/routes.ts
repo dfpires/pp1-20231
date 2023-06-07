@@ -56,17 +56,19 @@ export async function AppRoutes(server:FastifyInstance){
             const postBody = z.object({
                 title: z.string(),
                 content: z.string(),
+                likes: z.number(),
                 published: z.boolean(),
                 userId: z.number()
             })
             // recupera o dado do frontend a partir do zod postBody
             // converte o texto enviado pelo frontend para as variáveis title, content e published
-            const {title, content, published, userId} = postBody.parse(request.body)
+            const {title, content, likes, published, userId} = postBody.parse(request.body)
             // cria um novo post no banco de dados
             const newPost = await prisma.post.create({
                 data: {
                     title,
                     content,
+                    likes,
                     published,
                     userId
                 }
@@ -122,10 +124,11 @@ export async function AppRoutes(server:FastifyInstance){
                 "id": z.number(),
                 "title": z.string(),
                 "content": z.string(),
+                "likes": z.number(),
                 "published": z.boolean()
             })
             // recupera os dados do frontend
-            const {id, title, content, published} = putBody.parse(request.body)
+            const {id, title, content, likes, published} = putBody.parse(request.body)
 
             // atualiza no banco de dados
             const resposta = await prisma.post.updateMany({
@@ -135,6 +138,7 @@ export async function AppRoutes(server:FastifyInstance){
                 data: {
                     title,
                     content,
+                    likes, 
                     published: Boolean(published)
                 }
             })
@@ -166,4 +170,67 @@ export async function AppRoutes(server:FastifyInstance){
             const users = await prisma.user.findMany()
             return users
         })
+
+         // verifica se usuário e senha estão OK
+         server.post('/user/verifica', async (request) => {
+        const verificaBody = z.object({
+            username: z.string(),
+            password: z.string()
+        })
+        const {username, password} = verificaBody.parse(request.body)
+        const result = await prisma.user.findFirst({
+            where: {
+                username,
+                password
+            }
+        })
+        return result // retorna null se não encontrar e o objeto se encontra
+})
+
+ // rota pra atualizar a quantidade em estoque - compra
+ server.patch('/post/gostar', async (request) => {
+    const compraBody = z.object({
+        id: z.number(),
+        x: z.number()
+    })
+    const {id, x} = compraBody.parse(request.body)
+
+    let postUpdated = await prisma.post.update({
+        where: {
+            id: id
+        },
+        data: {
+            likes: {
+                increment: x
+            }
+        }
+    })
+    return postUpdated
+})
+
+// rota pra atualizar a quantidade em estoque - compra
+server.patch('/post/desgostar', async (request) => {
+    const compraBody = z.object({
+        id: z.number(),
+        x: z.number()
+    })
+    const {id, x} = compraBody.parse(request.body)
+
+    let postUpdated = await prisma.post.updateMany({
+        where: {
+            id: id,
+            likes: {
+                gte: x // greater than or equal
+            }
+        },
+        data: {
+            likes: {
+                decrement: x
+            }
+        }
+    })
+    return postUpdated
+})
+
+
 }

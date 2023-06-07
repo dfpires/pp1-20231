@@ -16,6 +16,7 @@ model Post {
   content   String
   published Boolean @default(false)
   userId    Int
+  likes     Int     @default(0)
   user      User  @relation(fields: [userId], references: [id])
 }
 
